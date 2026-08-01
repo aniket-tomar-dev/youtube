@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String   
+  avatar    String? 
+  createdAt DateTime @default(now())
+
+  channel       Channel?       
+  likes         Like[]         
+  subscriptions Subscription[] 
+  watchHistory  WatchHistory[]
+
+  @@map("users") 
+}
+
+model Channel {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  banner      String? 
+  createdAt   DateTime @default(now())
+
+  ownerId String @unique 
+  owner   User   @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  videos        Video[]        
+  subscribers   Subscription[] 
+
+  @@map("channels")
+}
+
+model Video {
+  id           String   @id @default(uuid())
+  title        String
+  description  String?
+  videoUrl     String   
+  thumbnailUrl String?  
+  category     String   @default("All")
+  views        Int      @default(0)
+  createdAt    DateTime @default(now())
+
+  channelId String
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  likes        Like[] 
+  watchHistory WatchHistory[]
+
+  @@map("videos")
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  videoId String
+  video   Video  @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, videoId]) 
+  @@map("likes")
+}
+
+model Subscription {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  subscriberId String
+  subscriber   User   @relation(fields: [subscriberId], references: [id], onDelete: Cascade)
+
+  channelId String
+  channel   Channel @relation(fields: [channelId], references: [id], onDelete: Cascade)
+
+  @@unique([subscriberId, channelId]) 
+  @@map("subscriptions")
+}
+
+model WatchHistory {
+  id        String   @id @default(uuid())
+  watchedAt DateTime @default(now())
+
+  userId String
+  user   User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  videoId String
+  video   Video @relation(fields: [videoId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, videoId])
+  @@map("watch_history")
+}
+
