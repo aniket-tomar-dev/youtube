@@ -24,3 +24,26 @@ export const toggleLike = async (req: Request, res: Response) => {
     return res.status(500).json({ message: "Server error." });
   }
 };
+
+export const getLikedVideos = async (req: Request, res: Response) => {
+  try {
+    const userId = req.userId as string;
+
+    const likes = await prisma.like.findMany({
+      where: { userId },
+      include: {
+        video: {
+          include: {
+            channel: true,
+          },
+        },
+      },
+      orderBy: { createdAt: "desc" },
+    });
+
+    return res.status(200).json({ likes });
+  } catch (error) {
+    console.error("Failed to fetch liked videos:", error);
+    return res.status(500).json({ message: "Server error." });
+  }
+};
