@@ -16,6 +16,7 @@ import History from "./pages/History";
 import Playlists from "./pages/Playlists";
 import WatchLater from "./pages/WatchLater";
 import LikedVideos from "./pages/LikedVideos";
+import Your_Videos from "./pages/Your_Videos";
 
 function App() {
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -55,6 +56,7 @@ function App() {
             <Route path="/history" element={<History />} />
             <Route path="/playlists" element={<Playlists />} />
             <Route path="/watch-later" element={<WatchLater />} />
+            <Route path="/myvideos" element={<Your_Videos />} />
             <Route path="/liked-videos" element={<LikedVideos />} />
           </Routes>
         </main>
